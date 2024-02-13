@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: file-download
+spec:
+  backoffLimit: 10   # Num Retries of failed POds before marking Job as Failed
+  parallelism: 1     # Num of PODs to run in parallel
+  completions: 1     # Num PODS Completed to consider the job complete
+  # ttlSecondsAfterFinished: 10
+  template:
+    metadata:
+      labels:
+        id: file-job
+    spec:
+      volumes:
+        - name: data-file-pv
+          persistentVolumeClaim:        # If your SC doesnt support dynamic provisioning you need to apply pv-lesson-pv.yaml
+            claimName: data-file-pv-claim    # Assumes you applied pv-lesson-pvc.yaml to creat the PVC
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        args: ["wget http://file-fs-svc:8888/data-file.csv -O /files/data-file.csv && cat /files/data-file.csv"]
+        image: harbor-repo.vmware.com/dockerhub-proxy-cache/library/busybox
+        name: file-download-container
+        volumeMounts:
+          - name: data-file-pv             # Name of PVC Volume from above.
+            mountPath: /files  # Will create the directory for us. File will be downloaded here. 
+      restartPolicy: Never

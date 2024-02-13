@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-fs-svc
+  labels:
+    app: file-fs  # Includes both v1 and v2 versions of the App
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8888
+    targetPort: 80
+  selector:
+    app: file-fs-nginx

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: file-fs-nginx
+    version: v1
+  name: file-fs-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-fs-nginx
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: file-fs-nginx
+        version: v1 
+    spec:
+      containers:
+      - image: harbor-repo.vmware.com/dockerhub-proxy-cache/mytkrausjr/file-nginx-fs:v3
+        name: nginx
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
