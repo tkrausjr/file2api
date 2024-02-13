@@ -43,11 +43,11 @@ kubectl get job
 	file-download   1/1           14s        19h
 ```
 
-## 3 - Deploy the Kubernetes Pod that will mount the PV load the file and expose it via website / Spring webserver
+## 3 - Deploy the Kubernetes Pod that will mount the PV, load the file, and expose it via website / Spring webserver
 - (Optional) Build the docker image for the API Server that will serve the data in the CSV file. Upload the image to your local registry.
 	- If you can download or access Docker Hub you can skip to the API Server K8s deployment below. 
 ```shell
-cd ./file2api/03-file-api
+cd ../03-file-api
 docker build -t file-nginx-api:v7 .
 docker tag file-nginx-api:v7 mytkrausjr/file-nginx-api:v7
 docker push mytkrausjr/file-nginx-api:v7
