@@ -18,9 +18,9 @@ spec:
         version: v1 
     spec:
       volumes:
-        - name: file-file-pv
+        - name: data-file-pv
           persistentVolumeClaim:        # If your SC doesnt support dynamic provisioning you need to apply pv-lesson-pv.yaml
-            claimName: file-file-pv-claim    # Assumes you applied pv-lesson-pvc.yaml to creat the PVC
+            claimName: data-file-pv-claim    # Assumes you applied pv-lesson-pvc.yaml to creat the PVC
             #readOnly: true
       containers:
       - image: harbor-repo.vmware.com/dockerhub-proxy-cache/mytkrausjr/file-nginx-api:v7
@@ -28,6 +28,6 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-          - name: file-file-pv                  # Name of PVC Volume from above.
+          - name: data-file-pv                  # Name of PVC Volume from above.
             mountPath: /usr/share/nginx/html    # Will create the directory for us. File will be downloaded here. 
       restartPolicy: Always

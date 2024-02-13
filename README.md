@@ -7,24 +7,20 @@ This repo simulates a simple application comprised of three pieces
 ## 0 - Checkout this git repo
 
 ## 1 - Deploy the Simulated FileServer holding file 
-- (Optional)Build the docker image for the webserver that will serve the CSV file.
+- (Optional) Build the docker image for the webserver that will serve the CSV file. Upload the image to your local registry.
 	- If you can download or access Docker Hub you can skip to the webserver deployment below. 
 ```shell
 cd ./file2api/01-file-fs
 docker build -t file-nginx-fs .
-```
-- Upload the image to your local registry.
-
- ```shell
 docker tag file-nginx-fs mytkrausjr/file-nginx-fs:v3
 docker push mytkrausjr/file-nginx-fs:v3
-``` 
-- Deploy the webserver that houses the CSV file to Kubernetes.
-	- Deploy the Deployment and Service to simulate the CSV Webserver.
+```
+
+- Deploy the webserver that houses the CSV file to Kubernetes as a K8s Deployment and Service to simulate the CSV Webserver.
+
 ```shell
- 	- cd ./file2api/01-file-fs
-	- kubectl apply -f . 
-	- kubectl get po,svc
+kubectl apply -f . 
+kubectl get po,svc
 ```
 
 TEST:
@@ -48,6 +44,15 @@ kubectl get job
 ```
 
 ## 3 - Deploy the Kubernetes Pod that will mount the PV load the file and expose it via website / Spring webserver
+- (Optional) Build the docker image for the API Server that will serve the data in the CSV file. Upload the image to your local registry.
+	- If you can download or access Docker Hub you can skip to the API Server K8s deployment below. 
+```shell
+cd ./file2api/03-file-api
+docker build -t file-nginx-api:v7 .
+docker tag file-nginx-api:v7 mytkrausjr/file-nginx-api:v7
+docker push mytkrausjr/file-nginx-api:v7
+```
+- Deploy the API Server that will mount the CSV file downloaded to the Persistent Volume in Kubernetes as a K8s Deployment and Service to server the data in the CSV via API.
 ```shell
 cd ../03-file-api
 kubectl apply  -f .
@@ -102,4 +107,20 @@ EWQ          Aberville     ABD         34875      Berryville    ASD         1923
 VBN          Winston       WEN         12987      Arkass        FDS         34875      yes  yes
 MNB          Regulator     REG         11731      Avin          FGH         12987      yes  yes
 PLO          Jansen        JHY         19244      Wenston       FGH         12398      no   yes
+```
+- To escape press ": q"
+
+- To scale the API Server increase the Replica count.
+	- NOTE: In vSphere 7.x the CSI driver does not support ReadWriteMany so the PV will only be mounted on a single K8s Node. Any pods scheduled on other Nodes that do not have the PV will fail to schedule successfully.
+
+```shell
+ kubectl scale deploy file-api --replicas=3
+ 	deployment.apps/file-api scaled
+
+k get po -l app=file-api
+NAME                             READY   STATUS              RESTARTS   AGE
+file-api-675dc68885-5j22b        0/1     ContainerCreating   0          5s
+file-api-675dc68885-mx22p        1/1     Running             0          4m13s
+file-api-675dc68885-rhnn4        1/1     Running             0          5s
+
 ```
